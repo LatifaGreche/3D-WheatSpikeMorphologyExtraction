@@ -1,1 +1,4 @@
-
+To run the code 
+  1- install the rigth python packages
+  2- In the anaconda powershell prompt specify the path to "ThicknessExtraction_main.py", input the aligned wheat spike, and give the output path to save the results; see bellow:
+              python "...\slicing_spike_main.py" -i "...\WATDE0323_spike1.ply" -o "...\result.xlsx"
