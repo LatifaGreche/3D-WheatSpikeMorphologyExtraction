@@ -6,7 +6,7 @@ import pandas as pd
 import pyvista as pv
 from tqdm import tqdm
 import tempfile
-from utile2 import * 
+from utils2 import * 
 
 # python "C:\Users\...\code\2-slicing\slicing_spike_main.py" -i "C:\Users\...\code\1-align\WATDE0323_spike1.ply" -o "C:\Users\...\code\2-slicing\result.xlsx"
 def process_single_file(ply_path: str) -> pd.DataFrame:
@@ -65,3 +65,4 @@ if __name__ == "__main__":
     os.makedirs(os.path.dirname(args.output_excel) or ".", exist_ok=True)
     df.to_excel(args.output_excel, index=False)
     print(f"✅ Results saved to: {args.output_excel}")
+
