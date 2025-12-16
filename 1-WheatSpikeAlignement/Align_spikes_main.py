@@ -2,11 +2,9 @@ import argparse
 import os
 import numpy as np
 import open3d as o3d
-from utils import *
+from utils1 import *
 
-#example to execute the code in powershell
-#get the write environement
-#python "C:\Users\..\code\1-aligne_spikes_main.py"  -i "C:\Users\..\code\WATDE0323_spike1.stl"  -o "C:\Users\..\code\WATDE0323_spike1_aligned.ply" --show
+
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Align a single STL/OBJ mesh.")
@@ -37,5 +35,6 @@ if __name__ == "__main__":
         output_file=args.output_file,
         show=args.show,
     )
+
 
 
