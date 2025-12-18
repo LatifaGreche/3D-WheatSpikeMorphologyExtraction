@@ -120,4 +120,175 @@ def RemoveApicalAwns(spikepath, top_awns):
     mesh = pv.read(spikepath)
     clipped = mesh.clip(normal=[0, 0, 1], origin=top_awns, invert=True)
     # pv.save_meshio("some_path.ply", clipped)
+
     return clipped
+
+_FLOAT_RE = re.compile(r"[-+]?\d*\.?\d+(?:[eE][-+]?\d+)?")
+
+def parse_area_str(area_str) -> np.ndarray:
+    """underscore-separated floats -> np.array(float)"""
+    if pd.isna(area_str):
+        return np.array([], dtype=float)
+    vals = []
+    for t in str(area_str).split("_"):
+        try:
+            vals.append(float(t))
+        except ValueError:
+            pass
+    return np.array(vals, dtype=float)
+
+def parse_centroid_str(centroid_str):
+    """
+    "[x y z]_[x y z]_..." -> (N,3) array + z list
+    Robust to extra spaces.
+    """
+    if pd.isna(centroid_str):
+        return np.empty((0, 3), dtype=float), []
+
+    rows = []
+    z_corr = []
+    for chunk in str(centroid_str).split("_"):
+        nums = _FLOAT_RE.findall(chunk)
+        if len(nums) < 3:
+            continue
+        x, y, z = map(float, nums[:3])
+        rows.append((x, y, z))
+        z_corr.append(z)
+
+    if not rows:
+        return np.empty((0, 3), dtype=float), []
+
+    return np.array(rows, dtype=float), z_corr
+
+def pick_first_existing(df, candidates):
+    for c in candidates:
+        if c in df.columns:
+            return c
+    return None
+
+def load_spike_excel(pathFile, sheet_name=0):
+    """
+    Returns unified arrays:
+      spike_ID, earID, area, vol, centroids
+    Works for both result.xlsx and shape_analysis_of_all_spikes*.xlsx
+    """
+    df = pd.read_excel(pathFile, sheet_name=sheet_name)
+
+    col_geno = pick_first_existing(df, ["Genotype ID", "spikelet ID", "variety ID", "Variety", "Genotype"])
+    col_ear  = pick_first_existing(df, ["Spike ID", "ear ID", "Ear ID", "Spike"])
+    col_area = pick_first_existing(df, ["Area", "area", "thickness", "Thickness"])
+    col_cent = pick_first_existing(df, ["Centroid", "centroid", "Centroids"])
+    col_vol  = pick_first_existing(df, ["Volume (mm³)", "volume", "Volume", "volume (mm3)"])
+
+    missing = [name for name, col in [
+        ("Genotype/spikelet ID", col_geno),
+        ("Spike/ear ID", col_ear),
+        ("Area/area/thickness", col_area),
+        ("Centroid/centroid", col_cent),
+    ] if col is None]
+
+    if missing:
+        raise ValueError(f"Missing columns {missing}. Found: {list(df.columns)}")
+
+    spike_ID  = df[col_geno].astype(str).values
+    earID     = df[col_ear].astype(str).values
+    area      = df[col_area].astype(str).values
+    centroids = df[col_cent].astype(str).values
+    vol       = df[col_vol].values if col_vol else np.full(len(df), np.nan)
+
+    return spike_ID, earID, area, vol, centroids
+
+
+# ----------------------------
+# Geometry metrics
+# ----------------------------
+def spike_length_from_skeleton(x, y, z) -> float:
+    # spline through skeleton points, then sum segment lengths
+    tck, _ = interpolate.splprep([x, y, z], s=5)
+    u_fine = np.linspace(0, 1, 15)
+    x_fine, y_fine, z_fine = interpolate.splev(u_fine, tck)
+
+    diffs = np.sqrt(np.diff(x_fine)**2 + np.diff(y_fine)**2 + np.diff(z_fine)**2)
+    return float(diffs.sum())
+
+
+# ----------------------------
+# Main processing (NO plotting)
+# ----------------------------
+def process_file(pathFile: str, out_xlsx: str, sheet_name=0, verbose=True):
+    spike_ID, earID, area, vol, centroids = load_spike_excel(pathFile, sheet_name=sheet_name)
+
+    len_spike = []
+    llll = []
+    AUC = []
+
+    for area_str, cent_str, geno, ear in zip(area, centroids, spike_ID, earID):
+        xyz, z_corr = parse_centroid_str(cent_str)
+        Y_t = parse_area_str(area_str)
+
+        if len(z_corr) == 0 or len(Y_t) == 0:
+            if verbose:
+                print(f"Skipping {geno} / {ear}: empty centroid or area after parsing")
+            len_spike.append(np.nan)
+            llll.append(np.nan)
+            AUC.append(np.nan)
+            continue
+
+        X_t = np.array(z_corr, dtype=float)
+        X_t = X_t - X_t[0]  # translate
+
+        # Align lengths safely
+        n = min(len(X_t), len(Y_t))
+        X_t = X_t[:n]
+        Y_t = Y_t[:n]
+
+        # ----- remove top awns based on your threshold logic (safe) -----
+        # original logic: find first index >=50 where Y_t < 8
+        if len(Y_t) > 50:
+            idx_candidates = np.where(Y_t[50:] < 8)[0]
+            if len(idx_candidates) == 0:
+                idx_cut = len(Y_t)
+            else:
+                idx_cut = int(idx_candidates[0] + 50)
+        else:
+            idx_cut = len(Y_t)
+
+        # skeleton points up to idx_cut
+        skel_cut = xyz[:idx_cut, :]
+        if skel_cut.shape[0] < 4:
+            # splprep needs enough points; fall back to polyline length
+            diffs = np.sqrt(np.sum(np.diff(skel_cut, axis=0)**2, axis=1)) if skel_cut.shape[0] >= 2 else np.array([0.0])
+            skel_len = float(diffs.sum())
+        else:
+            skel_len = spike_length_from_skeleton(skel_cut[:, 0], skel_cut[:, 1], skel_cut[:, 2])
+
+        # spike z length (from 0 to last cut slice)
+        z_len = float(np.linalg.norm(X_t[idx_cut - 1] - X_t[0])) if idx_cut >= 2 else 0.0
+
+        # AUC under spline curve
+        try:
+            tck = splrep(X_t, Y_t, s=0)
+            spline_y = BSpline(*tck)(X_t)
+            auc_val = float(auc(X_t, spline_y))
+        except Exception:
+            auc_val = np.nan
+
+        len_spike.append(z_len)
+        llll.append(skel_len)
+        AUC.append(auc_val)
+
+    # Save ONLY what you asked for
+    data = {
+        "Genotype ID": spike_ID,
+        "spike z length": len_spike,
+        "skeleton length": llll,
+        "volume": vol,
+        "area under spline curve": AUC,
+    }
+    df_out = pd.DataFrame(data)
+    os.makedirs(os.path.dirname(out_xlsx), exist_ok=True)
+    df_out.to_excel(out_xlsx, index=False)
+
+    if verbose:
+        print("Saved:", out_xlsx)
+        print("Rows:", len(df_out))
