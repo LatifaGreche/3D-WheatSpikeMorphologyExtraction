@@ -14,8 +14,9 @@ _FLOAT_RE = re.compile(r"[-+]?\d*\.?\d+(?:[eE][-+]?\d+)?")
 
 if __name__ == "__main__":
     # Works for either file type:
-    pathFile = r"C:\Users\grechel\OneDrive - Rothamsted Research\paper\github code\2-slicing\result.xlsx"
-    #"...\shape_analysis_of_all_spikes_ply_Va.xlsx"
+    pathFile = r"path_to....\result.xlsx"
+    #"path_to....\shape_analysis_of_all_spikes_ply_Va.xlsx"
 
     out_xlsx = os.path.join(os.path.dirname(pathFile), "summary_spike_metrics.xlsx")
     process_file(pathFile, out_xlsx, sheet_name=0, verbose=True)
+
