@@ -1,1 +1,17 @@
+#!/usr/bin/env python3
+"""
+Batch skeletonization for ear meshes (.ply).
 
+Outputs:
+  - For each ear:  <out_dir>/<ear_id>_points.ply
+  - ONE ear-level CSV:        <out_dir>/ear_skel_components.csv
+        columns: ear_id, total_branching_points, total_endpoints, prune_ratio
+  - ONE appended components CSV (all ears): <out_dir>/ear_components_appended.csv
+        columns: ear_id, component_index, size_voxels, branching_deg>=3,
+                 endpoints_deg==1, isolated_deg==0, is_lcc
+
+No per-ear component CSVs and no .xyz files are written.
+
+Requires:
+  pip install numpy trimesh scikit-image open3d
+"""
