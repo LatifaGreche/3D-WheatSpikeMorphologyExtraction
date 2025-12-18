@@ -16,13 +16,13 @@ High-resolution 3D pipeline for quantifying wheat spike morphology. Includes pyt
 
 Use folder WheatSpikeAlignement and install the rigth python packages
 In the anaconda powershell prompt specify the path to "Align_spikes_main.py", input the wheat spike spike to be aligned "WATDE0323_spike1.stl", and give the output path to save the aligned spike "WATDE0323_spike1.ply" ; see bellow:
+    
+      ```md
+      python "...\Align_spikes_main.py" -i "...\WATDE0323_spike1.stl" -o "...\WATDE0323_spike1.ply"  
 
-  ```md
-  python "...\Align_spikes_main.py" -i "...\WATDE0323_spike1.stl" -o "...\WATDE0323_spike1.ply"  
 Or you can visulaze the spike before and after alignement using:
 
-
-  ```md
-  python "...\Align_spikes_main.py" -i "...\WATDE0323_spike1.stl" -o "...\WATDE0323_spike1.ply"  --show
+      ```md
+      python "...\Align_spikes_main.py" -i "...\WATDE0323_spike1.stl" -o "...\WATDE0323_spike1.ply"  --show
 
 
