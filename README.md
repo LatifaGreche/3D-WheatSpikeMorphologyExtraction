@@ -1,7 +1,7 @@
 # 3D-WheatSpikeMorphologyExtraction
 High-resolution 3D pipeline for quantifying wheat spike morphology. Includes python codes for 3D spike mesh analysis, trait extraction, thickness profiling and statistical modeling to capture spike main segments (zone of aborted spikelets, base and apex),  length, volume, curvature, and branching for advanced phenotyping.
 
-### 1-Requirements
+### Requirements
 
   - Python ≥ 3.9 
   - Numpy
@@ -26,3 +26,11 @@ Or you can visulaze the spike before and after alignement using:
       python "...\Align_spikes_main.py" -i "...\WATDE0323_spike1.stl" -o "...\WATDE0323_spike1.ply"  --show
 
 
+### 2-Thickness profiling, length and volume extraction
+Use folder "ThicknessProfileExtraction" and in the anaconda powershell prompt specify the path to "ThicknessExtraction_main.py", input the aligned wheat spike, and give the output path to save the results; see bellow:
+
+              md
+              python "path to...\slicing_spike_main.py" -i "path to...\WATDE0323_spike1.ply" -o "path to...\result.xlsx"
+
+  Then, run the "summary_spike_metrics.py" to get the z-length, skeleton length , AUC volume, and the voxelisation volume.
+  Finally, run "ThicknessProfile_over_rachis&slices.py" if you want to visualize the thickness profile over the spike length
