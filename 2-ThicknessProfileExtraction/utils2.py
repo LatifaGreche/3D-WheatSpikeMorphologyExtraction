@@ -138,10 +138,6 @@ def parse_area_str(area_str) -> np.ndarray:
     return np.array(vals, dtype=float)
 
 def parse_centroid_str(centroid_str):
-    """
-    "[x y z]_[x y z]_..." -> (N,3) array + z list
-    Robust to extra spaces.
-    """
     if pd.isna(centroid_str):
         return np.empty((0, 3), dtype=float), []
 
@@ -167,11 +163,7 @@ def pick_first_existing(df, candidates):
     return None
 
 def load_spike_excel(pathFile, sheet_name=0):
-    """
-    Returns unified arrays:
-      spike_ID, earID, area, vol, centroids
-    Works for both result.xlsx and shape_analysis_of_all_spikes*.xlsx
-    """
+
     df = pd.read_excel(pathFile, sheet_name=sheet_name)
 
     col_geno = pick_first_existing(df, ["Genotype ID", "spikelet ID", "variety ID", "Variety", "Genotype"])
@@ -199,9 +191,7 @@ def load_spike_excel(pathFile, sheet_name=0):
     return spike_ID, earID, area, vol, centroids
 
 
-# ----------------------------
-# Geometry metrics
-# ----------------------------
+
 def spike_length_from_skeleton(x, y, z) -> float:
     # spline through skeleton points, then sum segment lengths
     tck, _ = interpolate.splprep([x, y, z], s=5)
@@ -212,9 +202,7 @@ def spike_length_from_skeleton(x, y, z) -> float:
     return float(diffs.sum())
 
 
-# ----------------------------
-# Main processing (NO plotting)
-# ----------------------------
+
 def process_file(pathFile: str, out_xlsx: str, sheet_name=0, verbose=True):
     spike_ID, earID, area, vol, centroids = load_spike_excel(pathFile, sheet_name=sheet_name)
 
@@ -242,8 +230,7 @@ def process_file(pathFile: str, out_xlsx: str, sheet_name=0, verbose=True):
         X_t = X_t[:n]
         Y_t = Y_t[:n]
 
-        # ----- remove top awns based on your threshold logic (safe) -----
-        # original logic: find first index >=50 where Y_t < 8
+
         if len(Y_t) > 50:
             idx_candidates = np.where(Y_t[50:] < 8)[0]
             if len(idx_candidates) == 0:
@@ -292,3 +279,4 @@ def process_file(pathFile: str, out_xlsx: str, sheet_name=0, verbose=True):
     if verbose:
         print("Saved:", out_xlsx)
         print("Rows:", len(df_out))
+
