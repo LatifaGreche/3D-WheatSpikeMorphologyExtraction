@@ -27,6 +27,7 @@ Or you can visulaze the spike before and after alignement using:
 
 
 ### 2-Thickness profiling, length and volume extraction
+
 Use folder "ThicknessProfileExtraction" and in the anaconda powershell prompt specify the path to "ThicknessExtraction_main.py", input the aligned wheat spike, and give the output path to save the results; see bellow:
 
               md
@@ -34,3 +35,9 @@ Use folder "ThicknessProfileExtraction" and in the anaconda powershell prompt sp
 
   Then, run the "summary_spike_metrics.py" to get the z-length, skeleton length , AUC volume, and the voxelisation volume.
   Finally, run "ThicknessProfile_over_rachis&slices.py" if you want to visualize the thickness profile over the spike length
+
+### 3-Thickness desriptors and spike segmentation
+
+### 4-Statistical traits of the fitting curve 
+
+### 5-Branches and endpoints features
