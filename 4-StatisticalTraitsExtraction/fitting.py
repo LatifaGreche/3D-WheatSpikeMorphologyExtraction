@@ -7,7 +7,7 @@ from sklearn.metrics import mean_squared_error, r2_score
 from utils5 import *
 
 # Load the provided Excel file
-file_path = r"path to ... \fitting curv\data thickness all spikes.xlsx"
+file_path = r"path to ... \fitting curv\data area all spikes.xlsx"
 path_to_axis=r"path to ... \data axis all spikes.xlsx"
 data_df = pd.read_excel(file_path, header=None)
 axsis_df = pd.read_excel(path_to_axis, header=None)
