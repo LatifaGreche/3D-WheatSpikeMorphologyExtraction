@@ -17,7 +17,7 @@ CLEAN_DISTANCE_MODE = "both"
 
 INDEX_DISTANCE_THRESHOLD = 1      
 Z_DISTANCE_THRESHOLD = 1        
-THICKNESS_DISTANCE_THRESHOLD = 3 
+Area_DISTANCE_THRESHOLD = 3 
 
 
 
@@ -61,13 +61,13 @@ def main():
                     "NumLocalMaxima_clean": 0,
                     "NumLocalMinima_clean": 0,
                     "Cleaned_Maxima_Z": "",
-                    "Cleaned_Maxima_Thickness": "",
+                    "Cleaned_Maxima_Area": "",
                     "Cleaned_Minima_Z": "",
-                    "Cleaned_Minima_Thickness": "",
+                    "Cleaned_Minima_Area": "",
                     "Clean_DistanceMode": CLEAN_DISTANCE_MODE,
                     "IndexThreshold": INDEX_DISTANCE_THRESHOLD,
                     "ZThreshold": Z_DISTANCE_THRESHOLD,
-                    "ThicknessThreshold": THICKNESS_DISTANCE_THRESHOLD,
+                    "AreaThreshold": Area_DISTANCE_THRESHOLD,
                 })
                 continue
 
@@ -90,13 +90,13 @@ def main():
                 "NumLocalMaxima_clean": nmax_c,
                 "NumLocalMinima_clean": nmin_c,
                 "Cleaned_Maxima_Z": max_zs,
-                "Cleaned_Maxima_Thickness": max_vs,
+                "Cleaned_Maxima_Area": max_vs,
                 "Cleaned_Minima_Z": min_zs,
-                "Cleaned_Minima_Thickness": min_vs,
+                "Cleaned_Minima_Area": min_vs,
                 "Clean_DistanceMode": CLEAN_DISTANCE_MODE,
                 "IndexThreshold": INDEX_DISTANCE_THRESHOLD,
                 "ZThreshold": Z_DISTANCE_THRESHOLD,
-                "ThicknessThreshold": THICKNESS_DISTANCE_THRESHOLD,
+                "AreaThreshold": Area_DISTANCE_THRESHOLD,
             })
 
     out_df = pd.DataFrame(rows).sort_values(["Variety_ID","File","Ear_ID"]).reset_index(drop=True)
