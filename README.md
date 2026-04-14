@@ -1,5 +1,5 @@
 # 3D-WheatSpikeMorphologyExtraction
-High-resolution 3D pipeline for quantifying wheat spike morphology. Includes python codes for 3D spike mesh analysis, trait extraction, thickness profiling and statistical modeling to capture spike main segments (zone of aborted spikelets, base and apex),  length, volume, curvature, and branching for advanced phenotyping.
+High-resolution 3D pipeline for quantifying wheat spike morphology. Includes python codes for 3D spike mesh analysis, trait extraction, cross-sectional area profiling and statistical modeling to capture spike main segments (zone of aborted spikelets, base and apex),  length, volume, curvature, and branching for advanced phenotyping.
 
 ### Requirements
 
@@ -26,17 +26,17 @@ Or you can visulaze the spike before and after alignement using:
       python "...\Align_spikes_main.py" -i "...\WATDE0323_spike1.stl" -o "...\WATDE0323_spike1.ply"  --show
 
 
-### 2-Thickness profiling, length and volume extraction
+### 2-cross-sectional area profiling, length and volume extraction
 
-Use folder "ThicknessProfileExtraction" and in the anaconda powershell prompt specify the path to "ThicknessExtraction_main.py", input the aligned wheat spike, and give the output path to save the results; see bellow:
+Use folder "areaProfileExtraction" and in the anaconda powershell prompt specify the path to "areaExtraction_main.py", input the aligned wheat spike, and give the output path to save the results; see bellow:
 
               md
               python "path to...\slicing_spike_main.py" -i "path to...\WATDE0323_spike1.ply" -o "path to...\result.xlsx"
 
   Then, run the "summary_spike_metrics.py" to get the z-length, skeleton length , AUC volume, and the voxelisation volume.
-  Finally, run "ThicknessProfile_over_rachis&slices.py" if you want to visualize the thickness profile over the spike length
+  Finally, run "areaProfile_over_rachis&slices.py" if you want to visualize the area profile over the spike length
 
-### 3-Thickness desriptors and spike segmentation
+### 3-Cross-sectional area desriptors and spike segmentation
 
 ### 4-Statistical traits of the fitting curve 
 
