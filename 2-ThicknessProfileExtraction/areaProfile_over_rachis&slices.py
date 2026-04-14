@@ -54,11 +54,11 @@ def normalize_input_dataframe(path_file, sheet_name=0):
     df = pd.read_excel(path_file, sheet_name=sheet_name)
     col_genotype = pick_first_existing(df, ["Genotype ID", "variety ID", "Variety", "Genotype", "variety"])
     col_spike    = pick_first_existing(df, ["Spike ID", "ear ID", "Ear ID", "spike ID", "Spike"])
-    col_area     = pick_first_existing(df, ["Area", "thickness", "Thickness", "area"])
+    col_area     = pick_first_existing(df, ["Area", "slicesArea", "SlicesArea", "area"])
     col_centroid = pick_first_existing(df, ["Centroid", "centroid", "Centroids"])
     col_volume   = pick_first_existing(df, ["Volume (mm³)", "volume", "Volume", "volume (mm3)"])
 
-    missing = [("Area/thickness", col_area), ("Centroid", col_centroid)]
+    missing = [("Area/slicesArea", col_area), ("Centroid", col_centroid)]
     missing = [name for name, col in missing if col is None]
     if missing:
         raise ValueError(
@@ -84,7 +84,7 @@ def process_spike_excel(
     output_dir: str,
     sheet_name=0,
     save_each_spike=True,
-    combined_output_name="all_spikes_thickness.xlsx"
+    combined_output_name="all_spikes_slicesarea.xlsx"
 ):
     os.makedirs(output_dir, exist_ok=True)
 
@@ -111,13 +111,13 @@ def process_spike_excel(
         slicess = np.linspace(1, n, num=n)
 
         df_out = pd.DataFrame(
-            {"Z coor": X_t.tolist(), "thickness": Y_t.tolist()},
+            {"Z coor": X_t.tolist(), "slicesArea": Y_t.tolist()},
             index=slicess
         )
 
         # Save per spike (like your original code)
         if save_each_spike:
-            fname = f"{geno}_{spike}_thickness.xlsx"
+            fname = f"{geno}_{spike}_sliceArea.xlsx"
             save_path = os.path.join(output_dir, fname)
             df_out.to_excel(save_path, sheet_name=safe_sheet_name(f"{geno}_{spike}"))
 
