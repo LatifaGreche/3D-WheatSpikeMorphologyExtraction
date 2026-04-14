@@ -20,7 +20,7 @@ INPUT_FILES = [
     r"...\data\WATDE0930.xlsx",
     r"...\data\Paragon.xlsx",
 ]
-OUTPUT_XLSX = r"path to output\Spike_Thickness_Segmentation.xlsx"
+OUTPUT_XLSX = r"path to output\Spike_areaprofile_Segmentation.xlsx"
 
 
 BASE_EPS = 0.10  
@@ -50,19 +50,19 @@ for f in INPUT_FILES:
         x = df[z_col].values
         y = df[t_col].values
         segments = segment_profile(x, y, base_eps=BASE_EPS)
-        for seg_name, x_start, x_end, length, mean_thick, slope, auc in segments:
+        for seg_name, x_start, x_end, length, mean_area, slope, auc in segments:
             all_rows.append({
                 "Variety_ID": variety_name,
                 "Ear_ID": ear_label,
                 "File": base,
                 "Ear_ID_Column": ear_id_col,
                 "Z_Column": z_col,
-                "Thickness_Column": t_col,
+                "Area_Column": t_col,
                 "Segment": seg_name,
                 "X_start": x_start,
                 "X_end": x_end,
                 "Length": length,
-                "MeanThickness": mean_thick,
+                "MeanArea": mean_area,
                 "Slope": slope,
                 "AUC": auc
             })
